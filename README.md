@@ -1,10 +1,10 @@
 # NAQT Tool
 
-`naqtool.sh` is a very simple tool to assist with creating Anki flashcards from the You Gotta Know articles from the National Academic Quiz Tournaments website. Using the tool is a two-stage process. First, the `naqttool.sh fetch` command is used to download an article and parse it into a very basic text format. Then this text document is edited by hand into suitable flashcard items. Finally, flash cards can be created from the new document with `naqttool.sh anki`.
+`naqtool.sh` is a very simple tool to assist with creating [Anki](https://apps.ankiweb.net/) flashcards from the [You Gotta Know](https://www.naqt.com/you-gotta-know/) articles from the National Academic Quiz Tournaments website. Using the tool is a multi-stage process. First, the `naqttool.sh fetch` command is used to download an article and parse it into a very basic text format. Then this text document is edited by hand into suitable flashcard items. Finally, flash cards are created from the new document with the `naqttool.sh anki` command.
 
 ## Requirements
 
-`naqttool.sh` depends on several external libraries: Requests, Beautiful Soup, and the Natural Language Toolkit. These should be installable with `pip install -r requirements.txt`. You may also need to download the Punkt language model for the NLTK. Instructions are here but the short version is `import nltk; nltk.download()` from a Python command prompt. You will also need the AnkiConnect add-on installed on your copy of Anki.
+`naqttool.sh` depends on several external libraries: [Requests](https://docs.python-requests.org/en/latest/), [Beautiful Soup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/), and the [Natural Language Toolkit](https://www.nltk.org/). These should be installable with `pip install -r requirements.txt`. You may also need to download the Punkt language model for the NLTK. Instructions are [here](https://www.nltk.org/data.html) but the short version is `import nltk; nltk.download()` from a Python command prompt. You will also need the [AnkiConnect](https://github.com/FooSoft/anki-connect) add-on installed on your copy of Anki.
 
 ## Usage
 
@@ -74,11 +74,11 @@ JSON export isn't really a core function; it is provided for testing and in case
 
 ## Template Format
 
-The template format is very simplistic. The parser splits the page into subject sections based on the bullets. Within each section, the paragraph is split into sentences. Broadly speaking, each sentence might potentially be the source of a flashcard, but that is by no means mandatory.
+The template format is very simplistic. The parser splits the page into subject sections based on the bullets. Within each section, the paragraph is split into sentences. Broadly speaking, each sentence is potentially the source of a flashcard, but that is by no means mandatory.
 
 By way of an example, the command
 
-`naqttool.sh fetch western-european-rivers -y --cat Rivers --tag geography,europe,naq`
+`naqttool.sh fetch western-european-rivers -y --cat Rivers --tag geography,europe,naqt`
 
 produces a template `western-european-rivers.txt` that begins like this:
 
@@ -118,7 +118,7 @@ TAGS:
 
 All the data in the header above the first `===` comes from the command line. The subject of each section is the phrase that is marked up as a `label` in the original HTML. The terms are the bolded phrases from each sentence (marked up as `ygk-term`).
 
-To make a prompt into a question, edit the text however seems suitable and put a `*` in front of the `PROMPT` label. If you don't do anything else, the subject for the section will be treated as the correct response to the prompt. You can also put a `*` in front of one of the `TERM` labels to make that term the correct response. If you put a `*` in front of multiple terms, they will all be listed as answers. You can also add extra information to be shown on the back of the flashcard beside the 'EXTRA' label and/or a comma-separated list of additional tags by the `TAGS` label.
+To make a prompt into a question, edit the text however seems suitable and put a `*` in front of the `PROMPT` label. If you don't do anything else, the subject for the section will be treated as the correct response to the prompt. You can also put a `*` in front of one of the `TERM` labels to make that term the correct response. If you put a `*` in front of multiple terms, they will all be listed as answers. You can also add extra information to be shown on the back of the flashcard beside the `EXTRA` label and/or a comma-separated list of additional tags by the `TAGS` label.
 
 Here is an example of how the fragment above might be edited into a plausible template for a set of cards.
 
@@ -138,7 +138,7 @@ EXTRA:
 TAGS: rivers
 ---
 *TERM: North Sea
-*PROMPT: The Rhine then flows north and joins with the Meuse and Scheldt to enter the what seas at a delta in the Netherlands?
+*PROMPT: The Rhine then flows north and joins with the Meuse and Scheldt to enter the what sea at a delta in the Netherlands?
 EXTRA:
 TAGS: rivers,seas
 ---
@@ -175,8 +175,12 @@ TAGS: rivers
 
 If you run `naqttool.sh fetch` with the `--cloze` option, all of the labels will created as `CLOZE` instead of `PROMPT`, but you can mix and match by hand within the same template if you wish.
 
+If you want to create multiple cards from one section and don't want to use Cloze items, just copy and paste the section, taking care to preserve the `---` dividers. You can of course edit the `TERM` items as well; you don't have to use the auto-generated ones as answers. And for what it's worth, you can use `ANSWER` as a label instead of `TERM`.
+
 ## Caveats
 
+* Don't use any hard returns when editing the prompts and answers. Soft wraps generated by your editor are fine.
 * This has only been tested on a few NAQT articles. It is possible that there are some that do not follow the normal conventions that will mess up the parsing.
 * Essentially no error checking is done when cards are created. Be careful. Back stuff up.
 * The code is sloppy. There are probably bugs.
+* This was developed and tested on Linux. No idea what issues there might be with Windows or macOS.
